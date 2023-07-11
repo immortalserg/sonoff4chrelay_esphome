@@ -16,9 +16,6 @@ esp8266:
   board: esp8285
 
 logger:
-api:
-  encryption:
-    key: "L1txIhH8xfzYawoda47Bwnjhv9kqO3FBKsv4fTTCjbg="
 ota:
   password: !secret ota
 wifi:
