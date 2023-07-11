@@ -1,0 +1,139 @@
+substitutions:
+  name: sonoff
+  fname: Sonoff
+  device_description: "Sonoff 4ch relay"
+  version: "1.0"
+  topic: sonoff
+esphome:
+  name: ${name}
+  friendly_name: ${fname}
+  comment: ${device_description}
+  includes:
+  - homekit_switch.h
+esp8266:
+  board: esp8285
+logger:
+ota:
+  password: !secret ota
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: !secret ap_ssid
+    password: !secret ap_password
+mqtt:
+  id: mqtt_client
+  reboot_timeout: 0s
+  broker: !secret mqtt_host
+  port: !secret mqtt_port
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+captive_portal:
+web_server:
+  port: 80
+  local: true
+
+binary_sensor:
+  - platform: gpio
+    name: "Button 1"
+    pin:
+      number: GPIO0
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+    - delayed_on_off: 100ms
+    on_press:
+    - switch.toggle: Relay1
+  - platform: gpio
+    name: "Button 2"
+    pin:
+      number: GPIO9
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+    - delayed_on_off: 100ms
+    on_press:
+    - switch.toggle: Relay2
+  - platform: gpio
+    name: "Button 3"
+    pin:
+      number: GPIO10
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+    - delayed_on_off: 100ms
+    on_press:
+    - switch.toggle: Relay3
+  - platform: gpio
+    name: "Button 4"
+    pin:
+      number: GPIO14
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+    - delayed_on_off: 100ms
+    on_press:
+    - switch.toggle: Relay4
+  - platform: status
+    name: "Sonoff 4CH Status"
+
+switch:
+  - platform: gpio
+    id: Relay1
+    name: "Relay 1"
+    pin: GPIO12
+  - platform: gpio
+    id: Relay2
+    name: "Relay 2"
+    pin: GPIO5
+  - platform: gpio
+    id: Relay3
+    name: "Relay 3"
+    pin: GPIO4
+  - platform: gpio
+    id: Relay4
+    name: "Relay 4"
+    pin: GPIO15
+custom_component:
+  - lambda: |-
+        auto my_component = new mqtt::HomeKitSwitchComponent(Relay1);
+        App.register_component(my_component);
+        my_component->set_custom_state_topic("${topic}/gpio12");
+        my_component->set_custom_command_topic("${topic}/set/gpio12");
+        return {my_component};
+  - lambda: |-
+        auto my_component = new mqtt::HomeKitSwitchComponent(Relay2);
+        App.register_component(my_component);
+        my_component->set_custom_state_topic("${topic}/gpio5");
+        my_component->set_custom_command_topic("${topic}/set/gpio5");
+        return {my_component}; 
+  - lambda: |-
+        auto my_component = new mqtt::HomeKitSwitchComponent(Relay3);
+        App.register_component(my_component);
+        my_component->set_custom_state_topic("${topic}/gpio4");
+        my_component->set_custom_command_topic("${topic}/set/gpio4");
+        return {my_component}; 
+  - lambda: |-
+        auto my_component = new mqtt::HomeKitSwitchComponent(Relay4);
+        App.register_component(my_component);
+        my_component->set_custom_state_topic("${topic}/gpio15");
+        my_component->set_custom_command_topic("${topic}/set/gpio15");
+        return {my_component}; 
+output:
+  - platform: esp8266_pwm
+    id: blue_led
+    pin: GPIO13
+    inverted: true
+light:
+  - platform: monochromatic
+    name: "Sonoff 4CH Blue LED"
+    output: blue_led
+    
