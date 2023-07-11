@@ -2,12 +2,14 @@ substitutions:
   name: esp02
   fname: Sonoff 2
   device_description: "Sonoff 4ch relay"
-  version: "1.0"
   topic: esp/esp02
 esphome:
   name: ${name}
   friendly_name: ${fname}
   comment: ${device_description}
+  project:
+    name: immortalserg.sonoff4chrelay_esphome
+    version: "1.0"
   includes:
   - homekit_switch.h
 esp8266:
@@ -132,7 +134,7 @@ custom_component:
   - lambda: |-
         auto my_component = new mqtt::HomeKitSwitchComponent(Relay4);
         App.register_component(my_component);
-        my_component->set_custom_state_topic("${topic}/gpio15");
+        my_component->set_custom_state_topic("${topic}/state_l4");
         my_component->set_custom_command_topic("${topic}/set/gpio15");
         return {my_component}; 
 output:
