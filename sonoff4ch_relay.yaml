@@ -1,9 +1,9 @@
 substitutions:
-  name: sonoff
-  fname: Sonoff
+  name: esp02
+  fname: Sonoff 2
   device_description: "Sonoff 4ch relay"
   version: "1.0"
-  topic: sonoff
+  topic: esp/esp02
 esphome:
   name: ${name}
   friendly_name: ${fname}
@@ -12,7 +12,11 @@ esphome:
   - homekit_switch.h
 esp8266:
   board: esp8285
+
 logger:
+api:
+  encryption:
+    key: "L1txIhH8xfzYawoda47Bwnjhv9kqO3FBKsv4fTTCjbg="
 ota:
   password: !secret ota
 wifi:
@@ -90,18 +94,22 @@ switch:
     id: Relay1
     name: "Relay 1"
     pin: GPIO12
+    state_topic: "${topic}/onoff/gpio12"
   - platform: gpio
     id: Relay2
     name: "Relay 2"
     pin: GPIO5
+    state_topic: "${topic}/onoff/gpio5"
   - platform: gpio
     id: Relay3
     name: "Relay 3"
     pin: GPIO4
+    state_topic: "${topic}/onoff/gpio4"
   - platform: gpio
     id: Relay4
     name: "Relay 4"
     pin: GPIO15
+    state_topic: "${topic}/onoff/gpio15"
 custom_component:
   - lambda: |-
         auto my_component = new mqtt::HomeKitSwitchComponent(Relay1);
@@ -132,6 +140,7 @@ output:
     id: blue_led
     pin: GPIO13
     inverted: true
+
 light:
   - platform: monochromatic
     name: "Sonoff 4CH Blue LED"
